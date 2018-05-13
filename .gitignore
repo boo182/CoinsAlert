@@ -1,0 +1,27 @@
+node_modules
+app/node_modules
+env.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# dependencies
+coins/node_modules
+
+# testing
+coins/coverage
+
+# production
+coins/build
+
+# misc
+coins/.DS_Store
+coins/.env.local
+coins/.env.development.local
+coins/.env.test.local
+coins/.env.production.local
+
+coins/npm-debug.log*
+coins/yarn-debug.log*
+coins/yarn-error.log*
