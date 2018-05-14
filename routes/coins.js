@@ -41,4 +41,10 @@ router.delete('/:id', async (req, res) => {
     res.json(resp);
 })
 
+router.post('/threshold/update', async (req, res) => {
+    console.log(req.body.id);
+    const resp = await CoinsController.updateThreshold(req.body.id, req.body.isEnabled);
+    res.json(resp);
+})
+
 export default router;

@@ -53,6 +53,14 @@ class coinsModel {
         .catch(err => console.log(err));
         return this.getAlerts(alertId);
     }
+
+    async updateThreshold(alertId, isEmailEnabled) {
+        const res = await knex('threshold')
+        .update('emailNotification', isEmailEnabled)
+        .where('id', alertId)
+        .catch(err => console.log(err))
+        return res;
+    }
 }
 
 const CoinsModel = new coinsModel;

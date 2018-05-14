@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { List, Button, Badge } from 'antd';
+import { List, Button, Badge, Icon } from 'antd';
 
 export default class ThresholdList extends Component {
   
@@ -28,6 +28,7 @@ export default class ThresholdList extends Component {
   generateData = () => {
     const { thresholds } = this.props;
     return thresholds.map(item => {
+
       return {
           id: item.id,
           description: (
@@ -40,14 +41,23 @@ export default class ThresholdList extends Component {
               </div>
             </div>
             {thresholds && <Badge count={this.createBadge(item.id)}/>}
+            <div style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
             <Button
-              style={{ marginRight: '20px' }} 
+              type={item.emailNotification ? 'primary' : 'default' }
+              size={'small'}
+              onClick={this.props.mailNotification(item.id, !item.emailNotification)}
+            >
+              <Icon type="mail" />
+            </Button>
+            <Button
+              style={{ marginRight: '20px', marginLeft: '20px' }} 
               type="danger" 
               size={'small'}
               onClick={this.props.onDelete(item.id)}
             >
             X
             </Button>
+            </div>
           </div>)
         };
     })
@@ -56,7 +66,7 @@ export default class ThresholdList extends Component {
     return (
       <div style={{
         margin: '50px 0px 0px 20px',
-        width: '30vw',
+        width: '40vw',
         border: '1px solid grey',
         borderRadius: '8px',
         maxHeight: '50vh', 

@@ -29,6 +29,7 @@ class App extends Component {
     }],
     thresholds: [],
     alerts: [],
+    minValue: 0
   }
 
   componentWillMount() {
@@ -57,13 +58,32 @@ class App extends Component {
   
   }
 
+  onMailEnabled = (id, isEnabled) => e => {
+    e.preventDefault();
+    this.setState({ loading: true });
+    fetch(`/coins/threshold/update`, { 
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id,
+        isEnabled,
+      }),
+    })
+    .then(res => res.json())
+    .then(res => this.setState({ loading: false }))
+    .catch(err => console.log(err));
+  }
+
   fetcher = (url, state) => {
     fetch(url)
-    .then(res => res.json())
-    .then(res => {
-      this.setState({
-      [state]: res
-    })
+      .then(res => res.json())
+      .then(res => {
+        this.setState({
+        [state]: res
+      })
     });
   }
 
@@ -129,7 +149,7 @@ class App extends Component {
   }
   render() {
     const dataSource = this.createDataSource();
-
+    const { coins, crypto } = this.state;
     return (
       <div className="App">
         <Table
@@ -142,13 +162,18 @@ class App extends Component {
           })}
           />
         <div style={{}}>
-          <Input setThreshold={this.setThreshold} chosenCrypto={this.state.crypto} />
+          <Input
+            setThreshold={this.setThreshold}
+            chosenCrypto={this.state.crypto}
+            coin={crypto && coins[crypto]}
+          />
           <ThresholdList
             thresholds={this.state.thresholds}
             fetch={this.fetcher}
             update={this.state.loading}
             onDelete={this.onDelete}
             hits={this.state.alerts}
+            mailNotification={this.onMailEnabled}
             />
         </div>
 

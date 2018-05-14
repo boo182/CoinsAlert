@@ -1,6 +1,6 @@
 import {fetcher} from './fetcher';
 import CoinsModel from '../models/coins';
-import { prepareMail } from '../utils/emailUtils';
+import { prepareMail, notification } from '../utils/emailUtils';
 class coinsController {
 
     async getCoins() {
@@ -30,8 +30,12 @@ class coinsController {
     }
     async sendMail(id) {
         const alert = await CoinsModel.getThreshold(id);
-        prepareMail(alert);
+        // prepareMail(alert);
+        notification(alert)
     }
+    async updateThreshold(id, isMailEnabled) {
+        return await CoinsModel.updateThreshold(id, isMailEnabled);
+    } 
 }
 
 const CoinsController = new coinsController;

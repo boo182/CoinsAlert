@@ -6,6 +6,7 @@ export default class ThresholdInput extends Component {
     currency: "eur",
     threshold: 0,
   };
+
   currencyDisplay = () => {
     const { currency } = this.state;
     if (currency === "eur") {
@@ -28,14 +29,17 @@ export default class ThresholdInput extends Component {
         key={item.label}
         type="primary"
         style={{ marginRight: '10px' }}
-        onClick={() => this.setState({ currency: item.label})}>
+        onClick={() => this.setState({ currency: item.label })}>
       {item.sign}
       </Button>
     ));
   }
 
   render() {
-    const isEnabled = this.state.threshold && this.props.chosenCrypto;
+    const { minThreshold, chosenCrypto } = this.props;
+    const { currency, threshold, minValue } = this.state;
+    const isEnabled = threshold && chosenCrypto;
+  
     return (
       <div>
         <div style={{ margin: '0px 0px 10px 20px' }}>
@@ -63,7 +67,7 @@ export default class ThresholdInput extends Component {
         <p style={{ margin:'20px' }}> 
           Set threshold on <span style={{ fontWeight : 'bolder' }}>
             {this.props.chosenCrypto}</span> to <span style={{ fontWeight : 'bolder' }}>
-              {this.state.threshold} {this.currencyDisplay()}
+              {threshold} {this.currencyDisplay()}
             </span>
         </p>}
       </div>
