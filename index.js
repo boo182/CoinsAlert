@@ -2,8 +2,7 @@ import express, { Router } from "express";
 import path from "path";
 import { json, urlencoded } from "body-parser";
 import cors from "cors";
-
-
+require('dotenv').config();
 
 
 const app = express();

@@ -9,6 +9,12 @@ router.get('/', async (req, res) => {
     res.json(coins);
 });
 
+router.get('/thresholds', async (req, res) => {
+    const resp = await CoinsController.getThresholds();
+    console.log(resp);
+    res.json(resp);
+})
+
 router.post('/threshold', async (req, res) => {
     const { crypto, threshold, currency } = req.body;
     console.log(threshold);

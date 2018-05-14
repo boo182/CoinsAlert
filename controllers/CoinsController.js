@@ -7,8 +7,11 @@ class coinsController {
         return coins
     }
     async setThreshold(crypto, threshold, currency) {
-        console.log(crypto, threshold, currency)
         const res = await CoinsModel.setThreshold(crypto, threshold, currency);
+        return res;
+    }
+    async getThresholds() {
+        const res = await CoinsModel.getThresholds();
         return res;
     }
 }

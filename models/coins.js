@@ -12,6 +12,13 @@ class coinsModel {
         .catch(err => console.log(err));
         return res;
     }
+
+    async getThresholds() {
+        const res = await knex('threshold')
+        .select()
+        .catch(err => console.log(err));
+        return res;
+    }
 }
 
 const CoinsModel = new coinsModel;

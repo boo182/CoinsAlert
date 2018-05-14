@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Input from './Components/Input';
-
+import ThresholdList from './Components/ThresholdList';
 import { Table } from 'antd';
 import 'antd/dist/antd.css';
 import * as Rx from 'rxjs';
@@ -27,23 +27,28 @@ class App extends Component {
       dataIndex: 'btc',
       key: 'btc',
     }],
+    thresholds: [],
   }
 
   componentWillMount() {
-    this.fetcher()
+    this.fetcher('/coins', 'coins');
+    this.fetcher('/coins/thresholds', 'thresholds');
     this.coinFetcher = Rx.interval(120000)
-      .subscribe(this.fetcher);
+      .subscribe(this.fetcher('/coins', 'coins'));
   }
 
   componentWillUnmount() {
     this.coinFetcher.unsuscribe();
   }
-  fetcher = () => {
-    fetch('/coins')
+
+  fetcher = (url, state) => {
+    fetch(url)
     .then(res => res.json())
-    .then(res => this.setState({
-      coins: res
-    }));
+    .then(res => {
+      this.setState({
+      [state]: res
+    })
+    });
   }
 
   createDataSource = () => {
@@ -81,6 +86,7 @@ class App extends Component {
   }
   render() {
     const dataSource = this.createDataSource();
+    console.log(this.state.thresholds);
     return (
       <div className="App">
         <Table
@@ -93,6 +99,8 @@ class App extends Component {
           })}
           />
         <Input setThreshold={this.setThreshold} chosenCrypto={this.state.crypto} />
+        <ThresholdList thresholds={this.state.thresholds}/>
+
       </div>
     );
   }
