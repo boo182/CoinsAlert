@@ -1,5 +1,5 @@
 import { InputNumber, Button } from "antd";
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 
 export default class ThresholdInput extends Component {
   state = {
@@ -35,15 +35,15 @@ export default class ThresholdInput extends Component {
   }
 
   render() {
+    const isEnabled = this.state.threshold && this.props.chosenCrypto;
     return (
-      <Fragment>
-        <div style={{ margin: '0px 0px 10px 110px' }}>
+      <div>
+        <div style={{ margin: '0px 0px 10px 20px' }}>
          {this.buttonsRenderer()}
         </div>
       <div
         style={{ marginLeft: "20px", display: "flex", alignItems: "center" }}
       >
-        <div style={{ marginRight: "20px" }}>Threshold:</div>
         <InputNumber
           style={{width: 'auto' }}
           formatter={value => `${this.currencyDisplay()} ${value}`}
@@ -54,6 +54,7 @@ export default class ThresholdInput extends Component {
          <Button
           style={{marginLeft: '30px' }}
           type="primary"
+          disabled={!isEnabled}
           onClick={() => this.props.setThreshold(this.state)}>
           Set Threshold
          </Button>
@@ -65,7 +66,7 @@ export default class ThresholdInput extends Component {
               {this.state.threshold} {this.currencyDisplay()}
             </span>
         </p>}
-      </Fragment>
+      </div>
     );
   }
 }

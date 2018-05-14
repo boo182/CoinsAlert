@@ -28,17 +28,33 @@ class App extends Component {
       key: 'btc',
     }],
     thresholds: [],
+    alerts: [],
   }
 
   componentWillMount() {
     this.fetcher('/coins', 'coins');
+    this.coinAlert();
+    this.fetcher('coins/getAlerts', 'alerts');
     this.fetcher('/coins/thresholds', 'thresholds');
     this.coinFetcher = Rx.interval(120000)
-      .subscribe(this.fetcher('/coins', 'coins'));
+      .subscribe(() => {
+        this.fetcher('/coins', 'coins');
+        this.coinAlert();
+      });
   }
 
   componentWillUnmount() {
     this.coinFetcher.unsuscribe();
+  }
+
+  onDelete = (id) => (e) => {
+    e.preventDefault();
+    this.setState({ loading: true });    
+    fetch(`/coins/${id}`, { method: 'DELETE'})
+    .then(res => res.json())
+    .then(res => this.setState({ loading: false }))
+    .catch(err => console.log(err));
+  
   }
 
   fetcher = (url, state) => {
@@ -66,6 +82,33 @@ class App extends Component {
     return dataSource;
   }
 
+  coinAlert = () => {
+   const { thresholds, coins } = this.state;
+   thresholds.forEach(item => {
+     const res = coins && coins[item.crypto][item.currency.toUpperCase()];
+     if(item.threshold < res) {
+       this.alert(item.id);
+     }
+   })
+  }
+
+  alert = (id) => {
+    this.setState({ loading: true });
+    fetch('/coins/alert', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id,
+      }),
+    })
+    .then(res => res.json())
+    .then(res => this.setState({ loading: false, alerts: res }))
+    .catch(err => console.log(err));
+  }
+
   setThreshold = (values) => {
     this.setState({ loading: true });
     fetch('/coins/threshold', {
@@ -86,7 +129,7 @@ class App extends Component {
   }
   render() {
     const dataSource = this.createDataSource();
-    console.log(this.state.thresholds);
+
     return (
       <div className="App">
         <Table
@@ -98,8 +141,16 @@ class App extends Component {
             }
           })}
           />
-        <Input setThreshold={this.setThreshold} chosenCrypto={this.state.crypto} />
-        <ThresholdList thresholds={this.state.thresholds}/>
+        <div style={{}}>
+          <Input setThreshold={this.setThreshold} chosenCrypto={this.state.crypto} />
+          <ThresholdList
+            thresholds={this.state.thresholds}
+            fetch={this.fetcher}
+            update={this.state.loading}
+            onDelete={this.onDelete}
+            hits={this.state.alerts}
+            />
+        </div>
 
       </div>
     );
