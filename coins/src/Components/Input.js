@@ -1,21 +1,12 @@
 import { InputNumber, Button } from "antd";
 import React, { Component } from "react";
+import { currencyDisplay } from '../utils/currencyUtils';
+
 
 export default class ThresholdInput extends Component {
   state = {
     currency: "eur",
     threshold: 0,
-  };
-
-  currencyDisplay = () => {
-    const { currency } = this.state;
-    if (currency === "eur") {
-      return '€';
-    } else if (currency === 'usd') {
-      return '$';
-    } else if (currency === 'btc') {
-      return '₿'
-    }
   };
 
   buttonsRenderer = () => {
@@ -36,8 +27,8 @@ export default class ThresholdInput extends Component {
   }
 
   render() {
-    const { minThreshold, chosenCrypto } = this.props;
-    const { currency, threshold, minValue } = this.state;
+    const { chosenCrypto } = this.props;
+    const { threshold } = this.state;
     const isEnabled = threshold && chosenCrypto;
   
     return (
@@ -50,7 +41,7 @@ export default class ThresholdInput extends Component {
       >
         <InputNumber
           style={{width: 'auto' }}
-          formatter={value => `${this.currencyDisplay()} ${value}`}
+          formatter={value => `${currencyDisplay(this.state.currency)} ${value}`}
           min={0}
           defaultValue={0}
           onChange={(e) => this.setState({ threshold: e })}
@@ -67,7 +58,7 @@ export default class ThresholdInput extends Component {
         <p style={{ margin:'20px' }}> 
           Set threshold on <span style={{ fontWeight : 'bolder' }}>
             {this.props.chosenCrypto}</span> to <span style={{ fontWeight : 'bolder' }}>
-              {threshold} {this.currencyDisplay()}
+              {threshold} {currencyDisplay(this.state.currency)}
             </span>
         </p>}
       </div>

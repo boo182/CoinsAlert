@@ -32,7 +32,16 @@ class coinsModel {
         .delete()
         .where('id', id)
         .catch(err => console.log(err));
+        this.deleteAlerts(id);
         return res;
+    }
+
+    deleteAlerts(id) {
+        const res = knex('alerts')
+        .delete()
+        .where('alertId', id)
+        .catch(err => console.log(err));
+        return res
     }
 
     async getAlerts() {
@@ -44,11 +53,20 @@ class coinsModel {
         return res;
     }
 
-    async newAlert(alertId) {
+    async getAlertsByThresholds(alertId) {
+        const res = await knex('alerts')
+        .select()
+        .where('alertId', alertId)
+        .catch(err => console.log(err));
+        return res;
+    }
+
+    async newAlert(alertId, alertedAt) {
         const res = await knex('alerts')
         .insert({
             alertId,
             alert: 1,
+            alertedAt
         })
         .catch(err => console.log(err));
         return this.getAlerts(alertId);
@@ -59,6 +77,38 @@ class coinsModel {
         .update('emailNotification', isEmailEnabled)
         .where('id', alertId)
         .catch(err => console.log(err))
+        return res;
+    }
+
+    async addCrypto(crypto) {
+        const res = await knex('crypto')
+        .insert({
+            crypto
+        })
+        .catch(err => console.log(err));
+        return await this.getCryptos();
+    }
+
+    async getCryptos() {
+        const res = await knex('crypto') 
+        .select()
+        .catch(err => console.log(err));
+        return res.map(item => item.crypto);
+    }
+
+    async deleteCrypto(crypto) {
+        const res = await knex('crypto') 
+        .delete()
+        .where('crypto', crypto)
+        .catch(err => console.log(err));
+        return res;
+    }
+
+    async deleteAlertsFromThreshold(id) {
+        const res = await knex('alerts') 
+        .delete()
+        .where('alertId', id)
+        .catch(err => console.log(err));
         return res;
     }
 }

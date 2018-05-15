@@ -1,8 +1,21 @@
 import React, { Component } from 'react'
+import AlertsDisplayer from './AlertsDisplayer';
 import { List, Button, Badge, Icon } from 'antd';
 
 export default class ThresholdList extends Component {
-  
+  state = {
+    displayAlerts: false,
+    thresholdId: 0,
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.alerts.length > 0) {
+      this.setState({ displayAlerts: true });
+    } else {
+      this.setState({ displayAlerts: false });
+      
+    }
+  }
   componentWillUpdate(nextProps) {
     if(nextProps.update !== this.props.update) {
       this.props.fetch('/coins/thresholds', 'thresholds');
@@ -24,10 +37,15 @@ export default class ThresholdList extends Component {
     return resp && resp.alerts;
   };
 
+  displayAlerts = (id, index) => (e) => {
+    e.preventDefault();
+    this.setState({ thresholdId: index });
+    this.props.getAlertsByThresholds(id);
 
+  }
   generateData = () => {
     const { thresholds } = this.props;
-    return thresholds.map(item => {
+    return thresholds.map((item, index) => {
 
       return {
           id: item.id,
@@ -40,49 +58,64 @@ export default class ThresholdList extends Component {
                 on <span style={{ fontWeight: 600 }}>{item.crypto}</span>
               </div>
             </div>
-            {thresholds && <Badge count={this.createBadge(item.id)}/>}
+            {thresholds &&
+              <div onClick={this.displayAlerts(item.id, index)}>
+                <Badge count={this.createBadge(item.id)}/>
+              </div>
+            }
             <div style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-            <Button
-              type={item.emailNotification ? 'primary' : 'default' }
-              size={'small'}
-              onClick={this.props.mailNotification(item.id, !item.emailNotification)}
-            >
-              <Icon type="mail" />
-            </Button>
-            <Button
-              style={{ marginRight: '20px', marginLeft: '20px' }} 
-              type="danger" 
-              size={'small'}
-              onClick={this.props.onDelete(item.id)}
-            >
-            X
-            </Button>
+              <Button
+                type={item.emailNotification ? 'primary' : 'default' }
+                size={'small'}
+                onClick={this.props.mailNotification(item.id, !item.emailNotification)}
+              >
+                <Icon type="mail" />
+              </Button>
+              <Button
+                style={{ marginRight: '20px', marginLeft: '20px' }} 
+                type="danger" 
+                size={'small'}
+                onClick={this.props.onDelete(item.id)}
+              >
+              X
+              </Button>
             </div>
           </div>)
         };
     })
   }
   render() {
+
     return (
-      <div style={{
-        margin: '50px 0px 0px 20px',
-        width: '40vw',
-        border: '1px solid grey',
-        borderRadius: '8px',
-        maxHeight: '50vh', 
-        overflowY: 'scroll'
-      }}>
-        <List
-          itemLayout="horizontal"
-          dataSource={this.generateData()}
-          renderItem={item => (
-            <List.Item>
-              <List.Item.Meta
-                  description={<div style={{ whiteSpace: 'pre-wrap' }}>{item.description}</div>}
-              />
-            </List.Item>
-          )}
-        />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <div style={{
+          margin: '50px 0px 0px 20px',
+          width: '40vw',
+          border: '1px solid grey',
+          borderRadius: '8px',
+          maxHeight: '50vh', 
+          overflowY: 'scroll'
+        }}>
+          <List
+            itemLayout="horizontal"
+            dataSource={this.generateData()}
+            renderItem={item => (
+              <List.Item>
+                <List.Item.Meta
+                    description={<div style={{ whiteSpace: 'pre-wrap' }}>{item.description}</div>}
+                />
+              </List.Item>
+            )}
+          />
+        </div>
+        {
+          this.state.displayAlerts &&
+          <AlertsDisplayer
+            threshold={this.props.thresholds[this.state.thresholdId]}
+            alerts={this.props.alerts}
+            onEmptyAlerts={this.props.onEmptyAlerts}
+            />
+        }
       </div>
     )
   }

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import Input from './Components/Input';
 import ThresholdList from './Components/ThresholdList';
-import { Table } from 'antd';
+import CryptoList from './Components/CryptoList';
+import { Table, Button } from 'antd';
 import 'antd/dist/antd.css';
 import * as Rx from 'rxjs';
 
@@ -26,10 +27,26 @@ class App extends Component {
       title: 'BTC',
       dataIndex: 'btc',
       key: 'btc',
-    }],
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (text, record) => (
+        <span>
+          <Button
+            type="danger"
+            onClick={this.removeCrypto(text, record)}
+          >
+          Remove
+          </Button>
+        </span>
+      ),
+    }
+  ],
     thresholds: [],
     alerts: [],
-    minValue: 0
+    minValue: 0,
+    alertsByThresholds: [],
   }
 
   componentWillMount() {
@@ -57,7 +74,16 @@ class App extends Component {
     .catch(err => console.log(err));
   
   }
-
+  removeCrypto = (text, record) => (e) => {
+    this.setState({ loading: true });
+    fetch(`/coins/delete/crypto/${text.crypto}`, { 
+      method: 'DELETE',
+    })
+    .then(res => res.json())
+    .then(res => this.setState({ loading: false }))
+    .catch(err => console.log(err));
+    this.fetcher('/coins', 'coins');
+  }
   onMailEnabled = (id, isEnabled) => e => {
     e.preventDefault();
     this.setState({ loading: true });
@@ -75,6 +101,28 @@ class App extends Component {
     .then(res => res.json())
     .then(res => this.setState({ loading: false }))
     .catch(err => console.log(err));
+
+  }
+  getAlertsByThresholds = (id) => {
+    this.fetcher(`/coins/alerts/${id}`, 'alertsByThresholds');
+  }
+
+  addToTable = newCrypto => {
+    this.setState({ loading: true });
+    fetch(`/coins/add/crypto`, { 
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        newCrypto
+      }),
+    })
+    .then(res => res.json())
+    .then(res => this.setState({ loading: false }))
+    .catch(err => console.log(err));
+    this.fetcher('/coins', 'coins');    
   }
 
   fetcher = (url, state) => {
@@ -107,12 +155,12 @@ class App extends Component {
    thresholds.forEach(item => {
      const res = coins && coins[item.crypto][item.currency.toUpperCase()];
      if(item.threshold < res) {
-       this.alert(item.id);
+       this.alert(item.id, res);
      }
    })
   }
 
-  alert = (id) => {
+  alert = (id, alertedAt) => {
     this.setState({ loading: true });
     fetch('/coins/alert', {
       method: 'POST',
@@ -122,13 +170,16 @@ class App extends Component {
       },
       body: JSON.stringify({
         id,
+        alertedAt
       }),
     })
     .then(res => res.json())
     .then(res => this.setState({ loading: false, alerts: res }))
     .catch(err => console.log(err));
   }
-
+  getAlerts = () => {
+    this.fetcher('/coins/getAlerts', 'alerts');
+  }
   setThreshold = (values) => {
     this.setState({ loading: true });
     fetch('/coins/threshold', {
@@ -147,36 +198,61 @@ class App extends Component {
     .then(res => this.setState({ loading: false }))
     .catch(err => console.log(err));
   }
+
+  onEmptyAlerts = (id) => e => {
+    e.preventDefault();
+    this.setState({ loading: true });
+    fetch(`/coins/delete/alerts/${id}`, { method: 'DELETE'})
+    .then(res => res.json())
+    .then(res => this.setState({ loading: false }))
+    .catch(err => console.log(err));
+    this.getAlertsByThresholds(id);
+    this.getAlerts();
+  }
   render() {
     const dataSource = this.createDataSource();
     const { coins, crypto } = this.state;
     return (
       <div className="App">
-        <Table
-          style={{ cursor: 'pointer' }}
-          dataSource={dataSource}
-          columns={this.state.columns}
-          onRow={(record) => ({onClick: () => {
-              this.setState({ crypto: record.crypto });
-            }
-          })}
-          />
-        <div style={{}}>
-          <Input
-            setThreshold={this.setThreshold}
-            chosenCrypto={this.state.crypto}
-            coin={crypto && coins[crypto]}
-          />
-          <ThresholdList
-            thresholds={this.state.thresholds}
-            fetch={this.fetcher}
-            update={this.state.loading}
-            onDelete={this.onDelete}
-            hits={this.state.alerts}
-            mailNotification={this.onMailEnabled}
-            />
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3vh' }}>
+          <div>
+            <Table
+              style={{ cursor: 'pointer', width: '80vw'}}
+              bordered
+              dataSource={dataSource}
+              columns={this.state.columns}
+              onRow={(record) => ({onClick: () => {
+                  this.setState({ crypto: record.crypto });
+                }
+              })}
+              />
+            <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+              <CryptoList
+                coins={this.state.coins}
+                addToTable={this.addToTable}
+                loading={this.state.loading}
+              />
+            </div>
+            <div>
+              <Input
+                setThreshold={this.setThreshold}
+                chosenCrypto={this.state.crypto}
+                coin={crypto && coins[crypto]}
+              />
+              <ThresholdList
+                thresholds={this.state.thresholds}
+                fetch={this.fetcher}
+                update={this.state.loading}
+                onDelete={this.onDelete}
+                hits={this.state.alerts}
+                mailNotification={this.onMailEnabled}
+                alerts={this.state.alertsByThresholds}
+                getAlertsByThresholds={this.getAlertsByThresholds}
+                onEmptyAlerts={this.onEmptyAlerts}
+                />
+            </div>
+          </div>
         </div>
-
       </div>
     );
   }
