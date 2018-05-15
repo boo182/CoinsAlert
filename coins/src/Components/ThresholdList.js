@@ -111,6 +111,7 @@ export default class ThresholdList extends Component {
         {
           this.state.displayAlerts &&
           <AlertsDisplayer
+            style={{ margiTop: 50 }}
             threshold={this.props.thresholds[this.state.thresholdId]}
             alerts={this.props.alerts}
             onEmptyAlerts={this.props.onEmptyAlerts}
