@@ -66,7 +66,8 @@ class coinsModel {
         .insert({
             alertId,
             alert: 1,
-            alertedAt
+            alertedAt,
+            createdAt: new Date(),
         })
         .catch(err => console.log(err));
         return this.getAlerts(alertId);

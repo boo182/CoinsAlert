@@ -1,13 +1,18 @@
 import React, { Component } from 'react'
 import { currencyDisplay } from '../utils/currencyUtils';
 import { Card } from 'antd';
+import moment from 'moment'
 
 export default class AlertDisplayer extends Component {
 
   generateAlerts = () => {
       const { alerts, threshold } = this.props;
-      return alerts.map(item =>
-        <p key={item.id}>{threshold.crypto} has reached {item.alertedAt}</p>
+      console.log(alerts);
+      return alerts.map(item => {
+        const duration = moment.duration(item.CreatedAt).humanize();
+        console.log(moment(item.CreatedAt).fromNow());
+        return <p key={item.id}>{threshold.crypto} has reached {item.alertedAt} ({duration})</p>
+      }
     )
   }
   generateTitle = () => {
