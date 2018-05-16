@@ -30,7 +30,7 @@ export const notification = (alert) => {
     notifier.notify(
         {
           title: 'Threshold Reached',
-          message: `Hello, ${alert[0].crypto} has hit the value of ${alert[0].threshold} ${alert[0].currency}`,
+          message: `Hello, ${alert[0].crypto} has hit the value of ${alert[0].alertedAt} ${alert[0].currency}`,
           sound: true, // Only Notification Center or Windows Toasters
           timeout: 10,
         },

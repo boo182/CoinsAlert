@@ -1,4 +1,4 @@
-export   const currencyDisplay = (currency) => {
+export const currencyDisplay = (currency) => {
     if (currency === "eur") {
       return '€';
     } else if (currency === 'usd') {

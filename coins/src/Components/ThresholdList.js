@@ -9,7 +9,7 @@ export default class ThresholdList extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps.alerts.length > 0) {
+    if(nextProps.alerts.length > 0 && this.state.thresholdId !== 0) {
       this.setState({ displayAlerts: true });
     } else {
       this.setState({ displayAlerts: false });
@@ -18,9 +18,10 @@ export default class ThresholdList extends Component {
   }
   componentWillUpdate(nextProps) {
     if(nextProps.update !== this.props.update) {
-      this.props.fetch('/coins/thresholds', 'thresholds');
+      this.props.fetch('/threshold', 'thresholds');
     }
   }
+
   currencyDisplay = currency => {
     if (currency === "eur") {
       return '€';
@@ -59,7 +60,7 @@ export default class ThresholdList extends Component {
               </div>
             </div>
             {thresholds &&
-              <div onClick={this.displayAlerts(item.id, index)}>
+              <div onClick={this.displayAlerts(item.id, index)} style={{ cursor: 'pointer' }}>
                 <Badge count={this.createBadge(item.id)}/>
               </div>
             }
@@ -75,8 +76,10 @@ export default class ThresholdList extends Component {
                 style={{ marginRight: '20px', marginLeft: '20px' }} 
                 type="danger" 
                 size={'small'}
-                onClick={this.props.onDelete(item.id)}
-              >
+                onClick={() => {
+                  this.setState({ displayAlerts: false, thresholdId: 0 });
+                  this.props.onDelete(item.id)
+                }}>
               X
               </Button>
             </div>
@@ -84,6 +87,12 @@ export default class ThresholdList extends Component {
         };
     })
   }
+
+  closeAlertsCard = () => (e) => {
+    e.preventDefault();
+    this.setState({ displayAlerts: false, thresholdId: 0 });
+  }
+
   render() {
 
     return (
@@ -91,13 +100,12 @@ export default class ThresholdList extends Component {
         <div style={{
           margin: '50px 0px 0px 20px',
           width: '40vw',
-          border: '1px solid grey',
-          borderRadius: '8px',
           maxHeight: '50vh', 
-          overflowY: 'scroll'
+          overflowY: 'auto'
         }}>
           <List
             itemLayout="horizontal"
+            bordered
             dataSource={this.generateData()}
             renderItem={item => (
               <List.Item>
@@ -115,6 +123,7 @@ export default class ThresholdList extends Component {
             threshold={this.props.thresholds[this.state.thresholdId]}
             alerts={this.props.alerts}
             onEmptyAlerts={this.props.onEmptyAlerts}
+            closeAlertsCard={this.closeAlertsCard}
             />
         }
       </div>

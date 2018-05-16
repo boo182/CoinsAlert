@@ -52,8 +52,8 @@ class App extends Component {
   componentWillMount() {
     this.fetcher('/coins', 'coins');
     this.coinAlert();
-    this.fetcher('coins/getAlerts', 'alerts');
-    this.fetcher('/coins/thresholds', 'thresholds');
+    this.fetcher('/alert', 'alerts');
+    this.fetcher('/threshold', 'thresholds');
     this.coinFetcher = Rx.interval(120000)
       .subscribe(() => {
         this.fetcher('/coins', 'coins');
@@ -65,30 +65,30 @@ class App extends Component {
     this.coinFetcher.unsuscribe();
   }
 
-  onDelete = (id) => (e) => {
-    e.preventDefault();
+  onDelete = (id) => {
     this.setState({ loading: true });    
-    fetch(`/coins/${id}`, { method: 'DELETE'})
+    fetch(`/threshold/${id}`, { method: 'DELETE'})
     .then(res => res.json())
     .then(res => this.setState({ loading: false }))
     .catch(err => console.log(err));
-  
   }
+
   removeCrypto = (text, record) => (e) => {
     this.setState({ loading: true });
-    fetch(`/coins/delete/crypto/${text.crypto}`, { 
+    fetch(`/coins/${text.crypto}`, { 
       method: 'DELETE',
     })
     .then(res => res.json())
-    .then(res => this.setState({ loading: false }))
+    .then(res => this.setState({ loading: false, crypto: null }))
     .catch(err => console.log(err));
     this.fetcher('/coins', 'coins');
   }
+
   onMailEnabled = (id, isEnabled) => e => {
     e.preventDefault();
     this.setState({ loading: true });
-    fetch(`/coins/threshold/update`, { 
-      method: 'POST',
+    fetch(`/threshold`, { 
+      method: 'PUT',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -104,12 +104,12 @@ class App extends Component {
 
   }
   getAlertsByThresholds = (id) => {
-    this.fetcher(`/coins/alerts/${id}`, 'alertsByThresholds');
+    this.fetcher(`/alert/${id}`, 'alertsByThresholds');
   }
 
   addToTable = newCrypto => {
     this.setState({ loading: true });
-    fetch(`/coins/add/crypto`, { 
+    fetch(`/coins/add`, { 
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -162,7 +162,7 @@ class App extends Component {
 
   alert = (id, alertedAt) => {
     this.setState({ loading: true });
-    fetch('/coins/alert', {
+    fetch('/alert', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -177,12 +177,14 @@ class App extends Component {
     .then(res => this.setState({ loading: false, alerts: res }))
     .catch(err => console.log(err));
   }
+
   getAlerts = () => {
-    this.fetcher('/coins/getAlerts', 'alerts');
+    this.fetcher('/alert', 'alerts');
   }
+
   setThreshold = (values) => {
     this.setState({ loading: true });
-    fetch('/coins/threshold', {
+    fetch('/threshold', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -195,20 +197,21 @@ class App extends Component {
       }),
     })
     .then(res => res.json())
-    .then(res => this.setState({ loading: false }))
+    .then(res => this.setState({ loading: false, crypto: null }))
     .catch(err => console.log(err));
   }
 
   onEmptyAlerts = (id) => e => {
     e.preventDefault();
     this.setState({ loading: true });
-    fetch(`/coins/delete/alerts/${id}`, { method: 'DELETE'})
+    fetch(`/alert/${id}`, { method: 'DELETE'})
     .then(res => res.json())
     .then(res => this.setState({ loading: false }))
     .catch(err => console.log(err));
     this.getAlertsByThresholds(id);
     this.getAlerts();
   }
+
   render() {
     const dataSource = this.createDataSource();
     const { coins, crypto } = this.state;
