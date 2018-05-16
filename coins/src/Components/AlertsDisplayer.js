@@ -7,11 +7,12 @@ export default class AlertDisplayer extends Component {
 
   generateAlerts = () => {
       const { alerts, threshold } = this.props;
-      console.log(alerts);
       return alerts.map(item => {
-        const duration = moment.duration(item.CreatedAt).humanize();
-        console.log(moment(item.CreatedAt).fromNow());
-        return <p key={item.id}>{threshold.crypto} has reached {item.alertedAt} ({duration})</p>
+        const duration = moment(item.createdAt).format("dddd, MMMM Do YYYY, h:mm:ss a");
+        return (<div key={item.id} style={{ borderBottom: '1px solid lightgrey', padding: '10px 0px 10px 0px' }}>
+            <div style={{ fontWeight: 600 }}>{threshold.crypto} has reached {item.alertedAt}</div>
+            <div>({duration})</div>
+          </div>);
       }
     )
   }
