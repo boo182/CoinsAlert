@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import AlertsDisplayer from './AlertsDisplayer';
 import { List, Button, Badge, Icon } from 'antd';
+import ChartDisplayer from './ChartDisplayer';
 
 export default class ThresholdList extends Component {
   state = {
     displayAlerts: false,
     thresholdId: 0,
+    displayChart: true,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -60,8 +62,17 @@ export default class ThresholdList extends Component {
               </div>
             </div>
             {thresholds &&
-              <div onClick={this.displayAlerts(item.id, index)} style={{ cursor: 'pointer' }}>
-                <Badge count={this.createBadge(item.id)}/>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ cursor: 'pointer' }}>
+                <Button onClick={this.displayAlerts(item.id, index)} >
+                  <Badge count={this.createBadge(item.id)}/>
+                </Button>
+                </div>
+                <div onClick={this.displayAlerts(item.id, index)} style={{ cursor: 'pointer', marginLeft: 30 }}>
+                  <Button>
+                    <Icon type="area-chart" />
+                  </Button>
+                </div>
               </div>
             }
             <div style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
@@ -94,7 +105,7 @@ export default class ThresholdList extends Component {
   }
 
   render() {
-
+    console.log(this.props.alerts);
     return (
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         <div style={{
@@ -125,6 +136,16 @@ export default class ThresholdList extends Component {
             onEmptyAlerts={this.props.onEmptyAlerts}
             closeAlertsCard={this.closeAlertsCard}
             />
+        }
+        {
+          this.state.displayChart &&
+          <ChartDisplayer
+            style={{ margiTop: 50 }}
+            threshold={this.props.thresholds[this.state.thresholdId]}
+            alerts={this.props.alerts}
+            onEmptyAlerts={this.props.onEmptyAlerts}
+            closeAlertsCard={this.closeAlertsCard}
+          />
         }
       </div>
     )

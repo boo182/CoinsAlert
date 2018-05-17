@@ -31,7 +31,7 @@ export default class AlertDisplayer extends Component {
   }
 
   render() {
-      this.generateTitle();
+    this.generateTitle();
     return (
       <div>
         <Card

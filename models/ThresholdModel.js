@@ -22,7 +22,6 @@ class thresholdModel {
     }
 
     async getThresholds() {
-        console.log('s<dlfkmsdfljqmlsdfjmqlsdjf')
         const res = await knex('threshold')
         .select()
         .catch(err => console.log(err));
