@@ -3,7 +3,13 @@ import {Line, LineChart, XAxis, YAxis, Tooltip, CartesianGrid, Legend} from 'rec
 import moment from 'moment';
 
 export default class ChartDisplayer extends Component {
-
+    getDomain = () => {
+      const { alerts } = this.props;
+      const alertsNumber = alerts.map(item => Number(item.alertedAt));
+      console.log(alertsNumber);
+      console.log(Math.max(...[0.5607, 0.5622, 0.5624]));
+      return [0, Math.max(...alertsNumber)];
+    }
     render() {
       const { alerts } = this.props;
       const data = alerts.length > 0
@@ -15,14 +21,14 @@ export default class ChartDisplayer extends Component {
           }
       })
       : [];
-      console.log(data);
+
     return (
       <div>
-        {data.length > 0 && <LineChart width={1000} height={500} data={data}
+        {data.length > 0 && <LineChart width={400} height={200} data={data}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
-            <YAxis type="number" domain={[0, 1]} />
+            <YAxis type="number" domain={this.getDomain()} />
             <Tooltip />
             <Legend />
             <Line type="monotone" dataKey="alertedAt" stroke="#8884d8" />

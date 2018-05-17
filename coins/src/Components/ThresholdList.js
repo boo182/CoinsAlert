@@ -7,7 +7,6 @@ export default class ThresholdList extends Component {
   state = {
     displayAlerts: false,
     thresholdId: 0,
-    displayChart: true,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -63,15 +62,8 @@ export default class ThresholdList extends Component {
             </div>
             {thresholds &&
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{ cursor: 'pointer' }}>
-                <Button onClick={this.displayAlerts(item.id, index)} >
+                <div onClick={this.displayAlerts(item.id, index)} style={{ cursor: 'pointer' }}>
                   <Badge count={this.createBadge(item.id)}/>
-                </Button>
-                </div>
-                <div onClick={this.displayAlerts(item.id, index)} style={{ cursor: 'pointer', marginLeft: 30 }}>
-                  <Button>
-                    <Icon type="area-chart" />
-                  </Button>
                 </div>
               </div>
             }
@@ -136,16 +128,6 @@ export default class ThresholdList extends Component {
             onEmptyAlerts={this.props.onEmptyAlerts}
             closeAlertsCard={this.closeAlertsCard}
             />
-        }
-        {
-          this.state.displayChart &&
-          <ChartDisplayer
-            style={{ margiTop: 50 }}
-            threshold={this.props.thresholds[this.state.thresholdId]}
-            alerts={this.props.alerts}
-            onEmptyAlerts={this.props.onEmptyAlerts}
-            closeAlertsCard={this.closeAlertsCard}
-          />
         }
       </div>
     )

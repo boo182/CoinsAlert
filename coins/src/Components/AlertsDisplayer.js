@@ -1,9 +1,13 @@
 import React, { Component } from 'react'
+import ChartDisplayer from './ChartDisplayer';
 import { currencyDisplay } from '../utils/currencyUtils';
-import { Card, Button } from 'antd';
+import { Card, Button, Icon } from 'antd';
 import moment from 'moment'
 
 export default class AlertDisplayer extends Component {
+  state = {
+    showGraph: false,
+  }
 
   generateAlerts = () => {
       const { alerts, threshold } = this.props;
@@ -38,8 +42,7 @@ export default class AlertDisplayer extends Component {
           title={this.generateTitle()}
           extra={
             <div>
-              <a
-                onClick={this.props.onEmptyAlerts(this.props.threshold.id)}
+              <a onClick={this.props.onEmptyAlerts(this.props.threshold.id)}
                 style={{ marginRight: '10px' }}>Empty</a>
               <Button
                 type="danger"
@@ -48,11 +51,25 @@ export default class AlertDisplayer extends Component {
                 >
                 x
               </Button>
+              <Button
+                size="small"
+                style={{ marginLeft: 10}}
+                onClick={() => this.setState({ showGraph: !this.state.showGraph })} 
+              >
+                <Icon type={this.state.showGraph ? "bars" : "area-chart"} />
+              </Button> 
             </div>
           }
           style={{ width: 400, maxHeight: '30vh', overflow: 'auto' }}
         >
-            {this.generateAlerts()}
+          {this.state.showGraph
+          ?  <ChartDisplayer
+              style={{ margiTop: 50 }}
+              threshold={this.props.threshold}
+              alerts={this.props.alerts}
+            />
+          : this.generateAlerts()
+        }
         </Card>
       </div>
     )
