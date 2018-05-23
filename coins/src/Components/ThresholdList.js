@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import AlertsDisplayer from './AlertsDisplayer';
 import { List, Button, Badge, Icon } from 'antd';
-import ChartDisplayer from './ChartDisplayer';
 
 export default class ThresholdList extends Component {
   state = {
@@ -97,7 +96,6 @@ export default class ThresholdList extends Component {
   }
 
   render() {
-    console.log(this.props.alerts);
     return (
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         <div style={{

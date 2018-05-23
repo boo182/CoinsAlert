@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import Input from './Components/Input';
 import ThresholdList from './Components/ThresholdList';
+import Chart from './Components/Chart';
 import CryptoList from './Components/CryptoList';
-import { Table, Button } from 'antd';
+import { Table, Button, Icon } from 'antd';
 import 'antd/dist/antd.css';
 import * as Rx from 'rxjs';
 
@@ -39,14 +40,26 @@ class App extends Component {
           >
           Remove
           </Button>
+          <Button
+            style={{ marginLeft: 20 }}
+            onClick={() => {
+              this.setState({ chartCrypto: text.crypto }, () => {
+                this.setState({ displayChart: true });
+              })
+            }}
+          >
+          <Icon type="area-chart" />
+          </Button>
         </span>
       ),
-    }
+    },
   ],
     thresholds: [],
     alerts: [],
     minValue: 0,
     alertsByThresholds: [],
+    chartCrypto: '',
+    displayChart: false,
   }
 
   componentWillMount() {
@@ -229,12 +242,19 @@ class App extends Component {
                 }
               })}
               />
+              {this.state.displayChart && <div>
+                <Chart
+                  crypto={this.state.crypto}
+                  currency={'EUR'}
+                  closeChart={() => this.setState({ displayChart: false })}
+                />
+              </div>}
             <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-              <CryptoList
-                coins={this.state.coins}
-                addToTable={this.addToTable}
-                loading={this.state.loading}
-              />
+                <CryptoList
+                  coins={this.state.coins}
+                  addToTable={this.addToTable}
+                  loading={this.state.loading}
+                />
             </div>
             <div>
               <Input

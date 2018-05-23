@@ -6,8 +6,6 @@ export default class ChartDisplayer extends Component {
     getDomain = () => {
       const { alerts } = this.props;
       const alertsNumber = alerts.map(item => Number(item.alertedAt));
-      console.log(alertsNumber);
-      console.log(Math.max(...[0.5607, 0.5622, 0.5624]));
       return [0, Math.max(...alertsNumber)];
     }
     render() {
